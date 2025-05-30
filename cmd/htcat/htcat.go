@@ -3,12 +3,13 @@ package main
 import (
 	"crypto/tls"
 	"flag"
-	"github.com/htcat/htcat"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"runtime"
+
+	"github.com/htcat/htcat"
 )
 
 const version = "1.0.2"
@@ -72,7 +73,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// Begin the GET.
-	htc := htcat.New(&client, u, 5)
+	htc := htcat.New(&client, u, 10)
 
 	if _, err := htc.WriteTo(os.Stdout); err != nil {
 		log.Fatalf("aborting: could not write to output stream: %v",
