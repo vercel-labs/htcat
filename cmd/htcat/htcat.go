@@ -15,6 +15,7 @@ import (
 const version = "1.0.2"
 
 var onlyPrintVersion = flag.Bool("version", false, "print the htcat version")
+var parallelism = flag.Int("parallelism", 5, "number of workers")
 
 const (
 	_        = iota
@@ -73,7 +74,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// Begin the GET.
-	htc := htcat.New(&client, u, 10)
+	htc := htcat.New(&client, u, *parallelism)
 
 	if _, err := htc.WriteTo(os.Stdout); err != nil {
 		log.Fatalf("aborting: could not write to output stream: %v",
