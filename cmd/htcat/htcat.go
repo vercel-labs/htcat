@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"flag"
 	"github.com/htcat/htcat"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -14,6 +15,7 @@ import (
 const version = "1.0.2"
 
 var onlyPrintVersion = flag.Bool("version", false, "print the htcat version")
+var outputFile = flag.String("o", "", "write output to file instead of stdout")
 
 const (
 	_        = iota
@@ -26,7 +28,7 @@ const (
 )
 
 func printUsage() {
-	log.Printf("usage: %v URL", os.Args[0])
+	log.Printf("usage: %v [-o output_file] URL", os.Args[0])
 }
 
 func main() {
@@ -74,7 +76,19 @@ func main() {
 	// Begin the GET.
 	htc := htcat.New(&client, u, 5)
 
-	if _, err := htc.WriteTo(os.Stdout); err != nil {
+	// Determine output destination
+	var output io.Writer = os.Stdout
+	if *outputFile != "" {
+		file, err := os.Create(*outputFile)
+		if err != nil {
+			log.Fatalf("aborting: could not create output file %v: %v",
+				*outputFile, err)
+		}
+		defer file.Close()
+		output = file
+	}
+
+	if _, err := htc.WriteTo(output); err != nil {
 		log.Fatalf("aborting: could not write to output stream: %v",
 			err)
 	}
